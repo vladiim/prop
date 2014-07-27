@@ -7,8 +7,11 @@ class PropertyMock < OpenStruct
   def initialize(blah); end
 end
 
+# next step
+# create a scraper iterator that visits every page
+
 describe "Property Scraper" do
-  let(:uri)     { "http://house.ksou.cn/p.php?q=Marrickville&s=1&region=Marrickville&sta=nsw" }
+  let(:uri)     { "http://house.ksou.cn/p.php?q=Marrickville&region=Marrickville&sta=nsw" }
   let(:scraper) { Scraper.new(uri) }
 
   before do
@@ -17,6 +20,28 @@ describe "Property Scraper" do
   end
 
   after { @stream.close }
+
+  describe Iterator do
+    # for a given suburb in a given state
+    # creates 10 async scrapers to get 10 pages of property data
+    # then tries the next 10 pages
+    # continues to scrape until there are no more pages
+
+    let(:suburb)   { "Marrickville" }
+    let(:state)    { "nsw" }
+    let(:iterator) { Iterator.new(suburb, state) }
+
+    describe "#initialize" do
+      it "sets up its variables" do
+        expect(iterator.page).to eq 0
+        expect(iterator.uri).to  eq uri + "&p=0"
+      end
+    end
+
+    describe "#next_page" do
+
+    end
+  end
 
   describe Scraper do
     describe "#extract_data" do

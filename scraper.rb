@@ -1,4 +1,16 @@
+class Iterator
+  URL = "http://house.ksou.cn/p.php?"
+
+  attr_reader :page, :uri
+  def initialize(suburb, state)
+    @page = 0
+    @uri  = URL + "q=#{ suburb }&region=#{ suburb }&sta=#{ state }&p=#{ page }"
+  end
+end
+
 class Scraper
+  # saves unique property data
+
   require "mechanize"
 
   attr_reader :agent, :properties
