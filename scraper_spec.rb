@@ -8,39 +8,39 @@ class PropertyMock < OpenStruct
 end
 
 describe "Property Scraper" do
-	let(:uri)     { "http://house.ksou.cn/p.php?q=Marrickville&s=1&region=Marrickville&sta=nsw" }
+  let(:uri)     { "http://house.ksou.cn/p.php?q=Marrickville&s=1&region=Marrickville&sta=nsw" }
   let(:scraper) { Scraper.new(uri) }
 
   before do
-  	@stream = File.open("#{ Dir.pwd }/fixtures/fixture.html", 'r')
-  	FakeWeb.register_uri(:get, uri, body: @stream, content_type: "text/html")
+    @stream = File.open("#{ Dir.pwd }/fixtures/fixture.html", 'r')
+    FakeWeb.register_uri(:get, uri, body: @stream, content_type: "text/html")
   end
 
   after { @stream.close }
 
   describe Scraper do
     describe "#extract_data" do
-    	before { expect(scraper.properties.length).to eq 0 }
+      before { expect(scraper.properties.length).to eq 0 }
 
-    	context "correct raw contents" do
+      context "correct raw contents" do
         it "saves the property" do
           class PropertyMock < OpenStruct
             def valid?; true; end
           end
-    			scraper.extract_data(PropertyMock)
-    			expect(scraper.properties.length).to be > 1
-    		end
-    	end
+          scraper.extract_data(PropertyMock)
+          expect(scraper.properties.length).to be > 1
+        end
+      end
 
-    	context "incorrect raw contents" do
-    		it "discards the property" do
+      context "incorrect raw contents" do
+        it "discards the property" do
           class PropertyMock < OpenStruct
             def valid?; false; end
           end
-    			scraper.extract_data(PropertyMock)
-    			expect(scraper.properties.length).to eq 0
-    		end
-    	end
+          scraper.extract_data(PropertyMock)
+          expect(scraper.properties.length).to eq 0
+        end
+      end
     end
   end
 
@@ -87,12 +87,12 @@ describe "Property Scraper" do
 end
 
 def first_result
-	{ address: "14/345 Illawarra Road", 
-	  price: 650000, 
-	  date_sold: Date.strptime("2014-07-01", "%Y-%m-%d"),
-	  type: "Unit", 
-	  bedrooms: 2, 
-	  bathrooms: 1, 
-	  carspace: 1
-	}
+  { address: "14/345 Illawarra Road", 
+    price: 650000, 
+    date_sold: Date.strptime("2014-07-01", "%Y-%m-%d"),
+    type: "Unit", 
+    bedrooms: 2, 
+    bathrooms: 1, 
+    carspace: 1
+  }
 end

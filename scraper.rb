@@ -1,22 +1,22 @@
 # require Dir.pwd + '/scraper'
 
 class Scraper
-	require "mechanize"
+  require "mechanize"
 
-	attr_reader :agent, :properties
-	def initialize(uri)
+  attr_reader :agent, :properties
+  def initialize(uri)
     @agent = Mechanize.new
     @properties = []
     agent.get(uri)
-	end
+  end
 
   def extract_data(property_klass = Property)
-  	raw_contents = agent.page.search("table#mainT table tr td[2] table")
+    raw_contents = agent.page.search("table#mainT table tr td[2] table")
 
-  	raw_contents.each do |raw_content|
-			property = property_klass.new(raw_content)
-			properties << property if property.valid?
-  	end
+    raw_contents.each do |raw_content|
+      property = property_klass.new(raw_content)
+      properties << property if property.valid?
+    end
   end
 end
 
@@ -70,9 +70,9 @@ class Property
 end
 
 # class Property
-# 	attr_accessor :address, :price, :type, :bedrooms, 
-# 	              :bathrooms, :carspace, :landsize, :date_sold,
-# 	              :rent, :date_rented
+#   attr_accessor :address, :price, :type, :bedrooms, 
+#                 :bathrooms, :carspace, :landsize, :date_sold,
+#                 :rent, :date_rented
 # end
 
 # require "mechanize"
@@ -107,17 +107,17 @@ end
 
 #   case meta_text
 #     when /Unit: /
-#     	add_meta_data(meta_text, prop_obj, "Unit")
-#   	when /Apartment: /
-#     	add_meta_data(meta_text, prop_obj, "Apartment")
-#   	when /House: /
-#     	add_meta_data(meta_text, prop_obj, "House")
-#   	when /Townhouse: /
-#     	add_meta_data(meta_text, prop_obj, "Townhouse")
-#   	when /Terrace: /
-#     	add_meta_data(meta_text, prop_obj, "Terrace")
-# 		else
-# 			prop_obj.type = "Unknown"
+#       add_meta_data(meta_text, prop_obj, "Unit")
+#     when /Apartment: /
+#       add_meta_data(meta_text, prop_obj, "Apartment")
+#     when /House: /
+#       add_meta_data(meta_text, prop_obj, "House")
+#     when /Townhouse: /
+#       add_meta_data(meta_text, prop_obj, "Townhouse")
+#     when /Terrace: /
+#       add_meta_data(meta_text, prop_obj, "Terrace")
+#     else
+#       prop_obj.type = "Unknown"
 #   end
 
 #   p prop_obj
