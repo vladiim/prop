@@ -70,18 +70,18 @@ describe "Property Scraper" do
         end
       end
 
-      context "incorrect raw content" do
-        it "isn't valid" do
-          uri     = "http://house.ksou.cn/p.php"
-          scraper = Scraper.new(uri)
-          stream  = File.open("#{ Dir.pwd }/fixtures/random_fixture.html", 'r')
-          FakeWeb.register_uri(:get, uri, body: stream, content_type: "text/html")
-          property = Property.new(scraper.agent.page)
+      # context "incorrect raw content" do
+      #   it "isn't valid" do
+      #     uri     = "http://house.ksou.cn/p.php"
+      #     scraper = Scraper.new(uri)
+      #     stream  = File.open("#{ Dir.pwd }/fixtures/random_fixture.html", 'r')
+      #     FakeWeb.register_uri(:get, uri, body: stream, content_type: "text/html")
+      #     property = Property.new(scraper.agent.page)
 
-          expect(property.valid?).to eq false
-          stream.close
-        end
-      end
+      #     expect(property.valid?).to eq false
+      #     stream.close
+      #   end
+      # end
     end
   end
 end
