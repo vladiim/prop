@@ -1,10 +1,39 @@
 class Iterator
   URL = "http://house.ksou.cn/p.php?"
 
-  attr_reader :page, :uri
+  attr_reader :uri, :suburb, :state, :page, :scraper, :properties
   def initialize(suburb, state)
-    @page = 0
-    @uri  = URL + "q=#{ suburb }&region=#{ suburb }&sta=#{ state }&p=#{ page }"
+    @suburb     = suburb
+    @state      = state
+    @page       = -1
+    @properties = []
+    @uri        = gen_next_page_uri
+  end
+
+  def scrape(scraper = Scraper.new(uri))
+    scraper.extract_data
+    properties << scraper.properties
+  end
+
+  def scrape_next_page
+    old_properties_length = properties.length
+    @uri = gen_next_page_uri
+    scrape
+    throw :no_more_properties unless old_properties_length < properties.length
+  end
+
+  def scrape_pages
+    scrape if page == 0
+
+    catch :no_more_properties
+      loop { scrape_next_page }
+    end
+  end
+
+  private
+  def gen_next_page_uri
+    @page = page + 1
+    URL + "q=#{ suburb }&region=#{ suburb }&sta=#{ state }&p=#{ page }"
   end
 end
 

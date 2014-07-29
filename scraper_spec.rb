@@ -33,13 +33,27 @@ describe "Property Scraper" do
 
     describe "#initialize" do
       it "sets up its variables" do
-        expect(iterator.page).to eq 0
         expect(iterator.uri).to  eq uri + "&p=0"
       end
     end
 
-    describe "#next_page" do
+    describe "#scrape" do
+      class MockScraper
+        def extract_data; "URI's DATA"; end
+        def properties; "PROPERTIES"; end
+      end
 
+      it "saves the scrapers properties" do
+        iterator.scrape(MockScraper.new)
+        expect(iterator.properties).to eq ["PROPERTIES"]
+      end
+    end
+
+    describe "#scrape_next_page" do
+      it "increases the uri's page" do
+        iterator.scrape_next_page
+        expect(iterator.uri).to eq uri + "&p=1"
+      end
     end
   end
 
