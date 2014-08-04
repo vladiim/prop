@@ -12,7 +12,7 @@ class Iterator
 
   def scrape(scraper = Scraper.new(uri))
     scraper.extract_data
-    properties << scraper.properties
+    update_properties(scraper) if scraper.properties.length > 0
   end
 
   def scrape_next_page
@@ -22,10 +22,10 @@ class Iterator
     throw :no_more_properties unless old_properties_length < properties.length
   end
 
-  def scrape_pages
+  def scrape_all_pages
     scrape if page == 0
 
-    catch :no_more_properties
+    catch :no_more_properties do
       loop { scrape_next_page }
     end
   end
@@ -34,6 +34,10 @@ class Iterator
   def gen_next_page_uri
     @page = page + 1
     URL + "q=#{ suburb }&region=#{ suburb }&sta=#{ state }&p=#{ page }"
+  end
+
+  def update_properties(scraper)
+    scraper.properties.each { |property| properties << property }
   end
 end
 
@@ -60,6 +64,7 @@ class Scraper
 end
 
 class Property
+
   attr_reader :raw_content, :is_property
   def initialize(raw_content)
     @raw_content = raw_content
@@ -68,6 +73,8 @@ class Property
       @is_property = true
     rescue Exception
       @is_property = false
+    ensure
+      @raw_content = ''
     end
   end
 
@@ -77,6 +84,7 @@ class Property
 
   attr_reader :address, :price, :date_sold,
     :type, :bedrooms, :bathrooms, :carspace
+
   private
 
   def find_and_save_data
