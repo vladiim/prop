@@ -13,140 +13,28 @@ end
 describe "Property Scraper" do
   let(:uri)      { "http://house.ksou.cn/p.php?q=Marrickville&region=Marrickville&sta=nsw" }
   let(:next_uri) { uri + "&p=1" }
-  let(:scraper)  { Scraper.new(uri) }
+  let(:suburb)   { "Marrickville" }
+  let(:state)    { "nsw" }
+  let(:iterator) { Iterator.new(suburb, state) }
 
   before do
     FakeWeb.register_uri(:get, uri, body: html_file, content_type: "text/html")
     FakeWeb.register_uri(:get, next_uri, body: "<html></html>", content_type: "text/html")
   end
 
-  describe Iterator do
-    # for a given suburb in a given state
-    # creates 10 async scrapers to get 10 pages of property data
-    # then tries the next 10 pages
-    # continues to scrape until there are no more pages
-
-    let(:suburb)   { "Marrickville" }
-    let(:state)    { "nsw" }
-    let(:iterator) { Iterator.new(suburb, state) }
-
-    describe "integration test" do
-      it "saves the properties of the first page" do
-        iterator.scrape_all_pages
-        expect(iterator.properties[0].address).to   eq first_result[:address]
-        expect(iterator.properties[0].price).to     eq first_result[:price]
-        expect(iterator.properties[0].date_sold).to eq first_result[:date_sold]
-        expect(iterator.properties[0].type).to      eq first_result[:type]
-        expect(iterator.properties[0].bedrooms).to  eq first_result[:bedrooms]
-        expect(iterator.properties[0].bathrooms).to eq first_result[:bathrooms]
-        expect(iterator.properties[0].carspace).to  eq first_result[:carspace]
-      end
-    end
-
-    # describe "#initialize" do
-    #   it "sets up its variables" do
-    #     expect(iterator.uri).to  eq uri + "&p=0"
-    #   end
-    # end
-
-    # describe "#scrape" do
-    #   class MockScraper
-    #     def extract_data; "URI's DATA"; end
-    #     def properties; "PROPERTIES"; end
-    #   end
-
-    #   it "saves the scrapers properties" do
-    #     iterator.scrape(MockScraper.new)
-    #     expect(iterator.properties).to eq ["PROPERTIES"]
-    #   end
-    # end
-
-    # describe "#scrape_next_page" do
-    #   it "increases the uri's page" do
-    #     iterator.scrape_next_page
-    #     expect(iterator.uri).to eq uri + "&p=1"
-    #   end
-    # end
-  end
-
-  # describe Scraper do
-  #   describe "#extract_data" do
-  #     before { expect(scraper.properties.length).to eq 0 }
-
-  #     context "correct raw contents" do
-  #       it "saves the property" do
-  #         class PropertyMock < OpenStruct
-  #           def valid?; true; end
-  #         end
-  #         scraper.extract_data(PropertyMock)
-  #         expect(scraper.properties.length).to be > 1
-  #       end
-  #     end
-
-  #     context "incorrect raw contents" do
-  #       it "discards the property" do
-  #         class PropertyMock < OpenStruct
-  #           def valid?; false; end
-  #         end
-  #         scraper.extract_data(PropertyMock)
-  #         expect(scraper.properties.length).to eq 0
-  #       end
-  #     end
-  #   end
-  # end
-
-  describe Property do
-    let(:raw_contents) { scraper.agent.page.search("table#mainT table tr td[2] table") }
-    let(:raw_content)  { raw_contents[0] }
-    let(:property)     { Property.new(raw_content) }
-
-    # describe "#initialize" do
-    #   context "correct raw content" do
-    #     it "sets the Property's data" do
-    #       expect(property.address).to   eq first_result[:address]
-    #       expect(property.price).to     eq first_result[:price]
-    #       expect(property.date_sold).to eq first_result[:date_sold]
-    #       expect(property.type).to      eq first_result[:type]
-    #       expect(property.bedrooms).to  eq first_result[:bedrooms]
-    #       expect(property.bathrooms).to eq first_result[:bathrooms]
-    #       expect(property.carspace).to  eq first_result[:carspace]
-    #     end
-    #   end
-    # end
-
-    describe "#valid?" do
-      context "correct raw content" do
-        it "is valid" do
-          expect(property.valid?).to eq true
-        end
-      end
-
-      # context "incorrect raw content" do
-      #   it "isn't valid" do
-      #     uri     = "http://house.ksou.cn/p.php"
-      #     scraper = Scraper.new(uri)
-      #     stream  = File.open("#{ Dir.pwd }/fixtures/random_fixture.html", 'r')
-      #     FakeWeb.register_uri(:get, uri, body: stream, content_type: "text/html")
-      #     property = Property.new(scraper.agent.page)
-
-      #     expect(property.valid?).to eq false
-      #     stream.close
-      #   end
-      # end
+  describe "integration test" do
+    it "saves the properties of the first page" do
+      iterator.scrape_all_pages
+      expect(iterator.properties[0].address).to   eq first_result[:address]
+      expect(iterator.properties[0].price).to     eq first_result[:price]
+      expect(iterator.properties[0].date_sold).to eq first_result[:date_sold]
+      expect(iterator.properties[0].type).to      eq first_result[:type]
+      expect(iterator.properties[0].bedrooms).to  eq first_result[:bedrooms]
+      expect(iterator.properties[0].bathrooms).to eq first_result[:bathrooms]
+      expect(iterator.properties[0].carspace).to  eq first_result[:carspace]
     end
   end
 end
-
-# def first_result
-#   { address: "14/345 Illawarra Road", 
-#     price: 650000, 
-#     date_sold: Date.strptime("2014-07-01", "%Y-%m-%d"),
-#     type: "Unit", 
-#     bedrooms: 2, 
-#     bathrooms: 1, 
-#     carspace: 1
-#   }
-# end
 
 def first_result
   { address: "52 Ruby Street",
