@@ -19,12 +19,10 @@ class Iterator
     old_properties_length = properties.length
     @uri = gen_next_page_uri
     scrape
-    throw :no_more_properties unless old_properties_length < properties.length
   end
 
   def scrape_all_pages
     scrape if page == 0
-
     catch :no_more_properties do
       loop { scrape_next_page }
     end
@@ -50,7 +48,11 @@ class Scraper
   def initialize(uri)
     @agent = Mechanize.new
     @properties = []
-    agent.get(uri)
+    begin
+      agent.get(uri)
+    rescue Mechanize::ResponseCodeError
+      throw :no_more_properties
+    end
   end
 
   def extract_data(property_klass = Property)

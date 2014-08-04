@@ -3,23 +3,14 @@ require "fakeweb"
 require "ostruct"
 require Dir.pwd + "/scraper"
 
-class PropertyMock < OpenStruct
-  def initialize(blah); end
-end
-
-# next step
-# create a scraper iterator that visits every page
-
 describe "Property Scraper" do
   let(:uri)      { "http://house.ksou.cn/p.php?q=Marrickville&region=Marrickville&sta=nsw" }
   let(:next_uri) { uri + "&p=1" }
-  let(:suburb)   { "Marrickville" }
-  let(:state)    { "nsw" }
-  let(:iterator) { Iterator.new(suburb, state) }
+  let(:iterator) { Iterator.new("Marrickville", "nsw") }
 
   before do
     FakeWeb.register_uri(:get, uri, body: html_file, content_type: "text/html")
-    FakeWeb.register_uri(:get, next_uri, body: "<html></html>", content_type: "text/html")
+    FakeWeb.register_uri(:get, next_uri, body: "Unhandled response", status: ["503", "unhandled response"])
   end
 
   describe "integration test" do
