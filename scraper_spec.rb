@@ -1,12 +1,13 @@
 require "rspec"
 require "fakeweb"
 require "ostruct"
-require Dir.pwd + "/scraper"
+require Dir.pwd + "/lib/scraper"
+require Dir.pwd + "/lib/property"
 
 describe "Property Scraper" do
   let(:uri)      { "http://house.ksou.cn/p.php?q=Marrickville&region=Marrickville&sta=nsw" }
   let(:next_uri) { uri + "&p=1" }
-  let(:iterator) { Iterator.new("Marrickville", "nsw") }
+  let(:scraper) { Scraper.new("Marrickville", "nsw") }
 
   before do
     @stream = File.open 'fixture.html', 'r'
@@ -18,14 +19,15 @@ describe "Property Scraper" do
 
   describe "integration test" do
     it "saves the properties of the first page" do
-      iterator.scrape_all_pages
-      expect(iterator.properties[0].address).to   eq first_result[:address]
-      expect(iterator.properties[0].price).to     eq first_result[:price]
-      expect(iterator.properties[0].date_sold).to eq first_result[:date_sold]
-      expect(iterator.properties[0].type).to      eq first_result[:type]
-      expect(iterator.properties[0].bedrooms).to  eq first_result[:bedrooms]
-      expect(iterator.properties[0].bathrooms).to eq first_result[:bathrooms]
-      expect(iterator.properties[0].carspace).to  eq first_result[:carspace]
+      scraper.scrape_all_pages
+      expect(scraper.properties[0].address).to   eq first_result[:address]
+      expect(scraper.properties[0].price).to     eq first_result[:price]
+      expect(scraper.properties[0].date_sold).to eq first_result[:date_sold]
+      expect(scraper.properties[0].type).to      eq first_result[:type]
+      expect(scraper.properties[0].bedrooms).to  eq first_result[:bedrooms]
+      expect(scraper.properties[0].bathrooms).to eq first_result[:bathrooms]
+      expect(scraper.properties[0].carspace).to  eq first_result[:carspace]
+      # expect(scraper.properties[0].landsize).to  eq first_result[:carspace]
     end
   end
 end
