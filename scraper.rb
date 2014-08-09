@@ -1,3 +1,29 @@
+# db = Sequel.postgres('property', user: 'vladmeh', password: 'Jr5MK%uFTvmBI1T%', host: 'localhost')
+
+class App
+  require 'sequel'
+
+  attr_reader :db
+  def initialize
+    @db = Sequel.postgres('property', user: 'vladmeh', password: 'Jr5MK%uFTvmBI1T%', host: 'localhost')
+  end
+
+  def create_properties_table
+    db.create_table(:properties) do |p|
+      primary_key :id
+      String :address
+      Integer :price
+      Date :date_sold
+      String :type
+      Integer :bedrooms
+      Integer :bathrooms
+      Integer :carspace
+      String :suburb
+      String :state
+    end
+  end
+end
+
 class Iterator
   URL = "http://house.ksou.cn/p.php?"
 
@@ -10,7 +36,8 @@ class Iterator
     @uri        = gen_next_page_uri
   end
 
-  def scrape(scraper = Scraper.new(uri))
+  def scrape
+    scraper = Scraper.new(uri, suburb, state)
     scraper.extract_data
     update_properties(scraper) if scraper.properties.length > 0
   end
@@ -44,10 +71,13 @@ class Scraper
 
   require "mechanize"
 
-  attr_reader :agent, :properties
-  def initialize(uri)
-    @agent = Mechanize.new
+  attr_reader :agent, :properties, :suburb, :state
+  def initialize(uri, suburb, state)
+    @agent      = Mechanize.new
+    @suburb     = suburb
+    @state      = state
     @properties = []
+
     begin
       agent.get(uri)
     rescue Mechanize::ResponseCodeError
@@ -55,11 +85,11 @@ class Scraper
     end
   end
 
-  def extract_data(property_klass = Property)
+  def extract_data
     raw_contents = agent.page.search("table#mainT table tr td[2] table")
 
     raw_contents.each do |raw_content|
-      property = property_klass.new(raw_content)
+      property = Property.new(raw_content, suburb, state)
       properties << property if property.valid?
     end
   end
@@ -67,9 +97,11 @@ end
 
 class Property
 
-  attr_reader :raw_content, :is_property
-  def initialize(raw_content)
+  attr_reader :raw_content, :is_property, :suburb, :state
+  def initialize(raw_content, suburb, state)
     @raw_content = raw_content
+    @suburb      = suburb
+    @state       = state
     begin
       find_and_save_data
       @is_property = true
