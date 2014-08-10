@@ -3,7 +3,9 @@
 
 #   attr_reader :connection
 #   def initialize
-#     @connection = 
+#     @connection = Sequel.connect('postgres://vladiim@localhost/property')
+#     # createdb property -O vladiim
+#     # -W dwnwEaQ5Z
 #   end
 
 #   def create_properties_table
