@@ -12,6 +12,21 @@ class Property
     is_property & address != '' & properties.each { |p| p.price != price }
   end
 
+  def sale_data
+    {
+      property: {
+        address: address, suburb: suburb, state: state, type: type,
+        bedrooms: bedrooms, bathrooms: bathrooms, carspace: carspace,
+        landsize: landsize
+      },
+      sale: {
+        price: price, date_sold: date_sold
+      }
+    }
+        connection[:properties].insert(data.fetch(:property))
+    connection[:properties].insert(data.fetch(:sale))
+  end
+
   attr_reader :is_property, :address, :price, :date_sold,
     :type, :bedrooms, :bathrooms, :carspace, :landsize
 
