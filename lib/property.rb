@@ -9,7 +9,7 @@ class Property
   end
 
   def valid?(properties)
-    is_property & address != '' & properties.each { |p| p.price != price }
+    is_property && address != ''
   end
 
   def sale_data
@@ -23,8 +23,6 @@ class Property
         price: price, date_sold: date_sold
       }
     }
-        connection[:properties].insert(data.fetch(:property))
-    connection[:properties].insert(data.fetch(:sale))
   end
 
   attr_reader :is_property, :address, :price, :date_sold,
